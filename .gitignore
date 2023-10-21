@@ -1,0 +1,38 @@
+# Java specific #
+*.class
+*.project
+*.classpath
+*.iml
+*.idea
+*.DS_Store
+gradle.properties
+
+# Private build folder #
+target/
+.metadata/
+.settings/
+.gradle/
+.build/
+build/
+out/
+
+bin/
+overlays/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.dll
+*.keep
+*.keep.*
+*.epoch
+*.out
+*.log
+*.dump
+*.dump.tmp
+*.lock
+*.log.*
+*.ipr
+*.iws

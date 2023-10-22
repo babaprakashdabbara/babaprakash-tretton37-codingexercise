@@ -25,26 +25,28 @@ public class JsoupWebScraperService implements WebScraperService {
 
     @Override
     public void handleWebPageScrapping(String url, String pathToDownload) {
+        traverseAndDownload(url, pathToDownload);
+    }
+
+    void traverseAndDownload(String url, String downloadPath) {
         try {
-            //TODO Fix File Structure
             Document document = Jsoup.connect(url).get();
-            String relativePath = url.replace(url, "");
-            String filePath = pathToDownload + relativePath;
+            String relativePath = url.replace("https://books.toscrape.com", "");
+            String filePath = downloadPath + relativePath;
             createDirectories(filePath);
             downloadPage(url, filePath);
             downloadImages(document, filePath);
             Elements nextPageLinks = document.select("li.next > a");
             if (!nextPageLinks.isEmpty()) {
                 String nextPageUrl = url.substring(0, url.lastIndexOf("/") + 1) + Objects.requireNonNull(nextPageLinks.first()).attr("href");
-                handleWebPageScrapping(nextPageUrl, pathToDownload);
-                logger.info("Completed downloading of images for the following url {}", url);
+                traverseAndDownload(nextPageUrl, downloadPath);
             }
         } catch (IOException exception) {
             logger.error("Error while performing web pages scraping on following url {}, {}", url, exception.getMessage());
         }
     }
 
-    private void downloadPage(String url, String filePath) {
+    void downloadPage(String url, String filePath) {
         try {
             Document document = Jsoup.connect(url).get();
             File file = new File(filePath + "/index.html");
@@ -56,7 +58,7 @@ public class JsoupWebScraperService implements WebScraperService {
         }
     }
 
-    private void downloadImages(Document document, String filePath) {
+    void downloadImages(Document document, String filePath) {
         Elements imgElements = document.select("img[src]");
         for (Element img : imgElements) {
             String imageUrl = img.absUrl("src");
@@ -72,14 +74,14 @@ public class JsoupWebScraperService implements WebScraperService {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void createDirectories(String path) {
+    void createDirectories(String path) {
         File file = new File(path);
         if (!file.exists()) {
             file.mkdirs();
         }
     }
 
-    private String getImageFileName(String imageUrl) {
+    String getImageFileName(String imageUrl) {
         Matcher matcher = extractImageFileName(imageUrl);
         if (matcher.find()) {
             return matcher.group(1);
@@ -87,7 +89,7 @@ public class JsoupWebScraperService implements WebScraperService {
         return "image.jpg";
     }
 
-    private Matcher extractImageFileName(String imageUrl) {
+    Matcher extractImageFileName(String imageUrl) {
         Pattern pattern = Pattern.compile(".*/(.*?)$");
         return pattern.matcher(imageUrl);
     }

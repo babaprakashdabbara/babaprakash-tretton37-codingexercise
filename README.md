@@ -10,6 +10,3 @@ Currently, Web scraping implementation is using Jsoup Library.
 
 1. To run the service, please execute following command in the command prompt:`./gradlew run'`
 2. All the downloaded files will be stored under Books directory.
-
-
-

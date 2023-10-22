@@ -28,7 +28,7 @@ public class JsoupWebScraperService implements WebScraperService {
         traverseAndDownload(url, pathToDownload);
     }
 
-    void traverseAndDownload(String url, String downloadPath) {
+    private void traverseAndDownload(String url, String downloadPath) {
         try {
             Document document = Jsoup.connect(url).get();
             String relativePath = url.replace("https://books.toscrape.com", "");
@@ -46,7 +46,7 @@ public class JsoupWebScraperService implements WebScraperService {
         }
     }
 
-    void downloadPage(String url, String filePath) {
+    private void downloadPage(String url, String filePath) {
         try {
             Document document = Jsoup.connect(url).get();
             File file = new File(filePath + "/index.html");
@@ -58,7 +58,7 @@ public class JsoupWebScraperService implements WebScraperService {
         }
     }
 
-    void downloadImages(Document document, String filePath) {
+    private void downloadImages(Document document, String filePath) {
         Elements imgElements = document.select("img[src]");
         for (Element img : imgElements) {
             String imageUrl = img.absUrl("src");
@@ -74,14 +74,14 @@ public class JsoupWebScraperService implements WebScraperService {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    void createDirectories(String path) {
+    private void createDirectories(String path) {
         File file = new File(path);
         if (!file.exists()) {
             file.mkdirs();
         }
     }
 
-    String getImageFileName(String imageUrl) {
+    private String getImageFileName(String imageUrl) {
         Matcher matcher = extractImageFileName(imageUrl);
         if (matcher.find()) {
             return matcher.group(1);
@@ -89,7 +89,7 @@ public class JsoupWebScraperService implements WebScraperService {
         return "image.jpg";
     }
 
-    Matcher extractImageFileName(String imageUrl) {
+    private Matcher extractImageFileName(String imageUrl) {
         Pattern pattern = Pattern.compile(".*/(.*?)$");
         return pattern.matcher(imageUrl);
     }

@@ -24,11 +24,11 @@ public class JsoupWebScraperService implements WebScraperService {
     private static final Logger logger = LoggerFactory.getLogger(JsoupWebScraperService.class);
 
     @Override
-    public void handleWebPageScrapping(String url, String pathToDownload) {
+    public void handleWebPageScrapping(String url, String pathToDownload) throws IOException {
         traverseAndDownload(url, pathToDownload);
     }
 
-    private void traverseAndDownload(String url, String downloadPath) {
+    private void traverseAndDownload(String url, String downloadPath) throws IOException {
         try {
             Document document = Jsoup.connect(url).get();
             String relativePath = url.replace("https://books.toscrape.com", "");
@@ -43,10 +43,11 @@ public class JsoupWebScraperService implements WebScraperService {
             }
         } catch (IOException exception) {
             logger.error("Error while performing web pages scraping on following url {}, {}", url, exception.getMessage());
+            throw exception;
         }
     }
 
-    private void downloadPage(String url, String filePath) {
+    private void downloadPage(String url, String filePath) throws IOException {
         try {
             Document document = Jsoup.connect(url).get();
             File file = new File(filePath + "/index.html");
@@ -55,10 +56,11 @@ public class JsoupWebScraperService implements WebScraperService {
             writer.close();
         } catch (IOException ioException) {
             logger.error("Error while trying to download the pages {}", ioException.getMessage());
+            throw ioException;
         }
     }
 
-    private void downloadImages(Document document, String filePath) {
+    private void downloadImages(Document document, String filePath) throws IOException {
         Elements imgElements = document.select("img[src]");
         for (Element img : imgElements) {
             String imageUrl = img.absUrl("src");
@@ -69,6 +71,7 @@ public class JsoupWebScraperService implements WebScraperService {
                 Files.copy(in, imgPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException ioException) {
                 logger.error("Error while trying to download the images {}", ioException.getMessage());
+                throw ioException;
             }
         }
     }
